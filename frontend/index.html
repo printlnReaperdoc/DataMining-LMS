@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Data Mining ITEP411-T learning management system">
+  <title>Data Mining | ITEP411-T</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div><strong>Data Mining</strong><span>ITEP411-T</span></div>
+    <div id="account"></div>
+  </header>
+  <main id="app" class="shell">
+    <section id="auth-view" class="auth-card">
+      <p class="eyebrow">4th Year · 1st Term</p>
+      <h1>Learn to find insight in data.</h1>
+      <p class="muted">A secure learning space for Data Mining (Elective 2).</p>
+      <div class="tabs"><button class="tab active" data-auth="login">Sign in</button><button class="tab" data-auth="register">Create student account</button></div>
+      <form id="auth-form">
+        <label>Username<input name="username" required autocomplete="username"></label>
+        <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+        <div id="registration-fields" hidden>
+          <label>First name<input name="firstName" autocomplete="given-name"></label>
+          <label>Surname<input name="surname" autocomplete="family-name"></label>
+          <p class="hint">Public registration creates student accounts. Faculty accounts require an administrator.</p>
+        </div>
+        <button class="primary" type="submit">Sign in</button>
+        <p id="auth-message" class="message" role="alert"></p>
+      </form>
+    </section>
+    <section id="dashboard-view" hidden>
+      <div class="course-intro"><div><p class="eyebrow">IT Professional Elective 2</p><h1>Data Mining</h1><p class="muted">Database-driven lessons, assessments, and progression.</p></div><div class="course-meta"><span>4 modules</span><span>12 chapters</span><span>75% pass mark</span></div></div>
+      <div class="layout"><aside id="curriculum" class="sidebar"></aside><section id="content" class="content"></section></div>
+    </section>
+  </main>
+  <script src="/js/app.js" defer></script>
+</body>
+</html>
