@@ -1,0 +1,17 @@
+{
+  "name": "data-mining-lms",
+  "version": "1.0.0",
+  "description": "Production-Ready Learning Management System (LMS) for Data Mining (Elective 2) - ITEP411-T",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node --watch --watch-path=backend backend/server.js",
+    "dev": "node --watch --watch-path=backend backend/server.js",
+    "seed": "node backend/seed.js",
+    "test": "node --test backend/tests/*.test.js",
+    "reset-passwords": "node backend/scripts/resetPasswords.js"
+  },
+  "keywords": ["data-mining", "lms", "education", "mysql", "express"],
+  "author": "",
+  "license": "ISC"
+}
+

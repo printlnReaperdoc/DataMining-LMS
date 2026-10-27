@@ -3,38 +3,424 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Data Mining ITEP411-T learning management system">
-  <title>Data Mining | ITEP411-T</title>
+  <meta name="description" content="Production-Ready Learning Management System (LMS) - Data Mining (Elective 2) ITEP411-T">
+  <title>Data Mining LMS | ITEP411-T</title>
   <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
+  <!-- Header Bar -->
   <header class="topbar">
-    <div><strong>Data Mining</strong><span>ITEP411-T</span></div>
-    <div id="account"></div>
+    <div class="brand">
+      <span class="brand-title">Data Mining (Elective 2)</span>
+      <span class="brand-meta">ITEP411-T · 4th Year, 1st Term (4-1)</span>
+    </div>
+    <div id="account-area" class="user-nav">
+      <!-- Populated dynamically: username, role pill, logout button -->
+    </div>
   </header>
-  <main id="app" class="shell">
-    <section id="auth-view" class="auth-card">
-      <p class="eyebrow">4th Year · 1st Term</p>
-      <h1>Learn to find insight in data.</h1>
-      <p class="muted">A secure learning space for Data Mining (Elective 2).</p>
-      <div class="tabs"><button class="tab active" data-auth="login">Sign in</button><button class="tab" data-auth="register">Create student account</button></div>
-      <form id="auth-form">
-        <label>Username<input name="username" required autocomplete="username"></label>
-        <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
-        <div id="registration-fields" hidden>
-          <label>First name<input name="firstName" autocomplete="given-name"></label>
-          <label>Surname<input name="surname" autocomplete="family-name"></label>
-          <p class="hint">Public registration creates student accounts. Faculty accounts require an administrator.</p>
+
+  <!-- Main Application Shell -->
+  <main class="shell">
+    
+    <!-- 1. AUTHENTICATION VIEW -->
+    <section id="auth-view" class="auth-wrapper">
+      <div class="auth-header">
+        <h2>Data Mining (ITEP411-T)</h2>
+        <p class="stat-meta">Sign in or create a student account to access course modules and assessments.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab" data-tab="register">Student Registration</button>
+      </div>
+
+      <div id="auth-alert" class="alert-message" style="display: none;"></div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input id="login-username" name="username" class="form-control" required autocomplete="username" placeholder="e.g. student1 or faculty">
         </div>
-        <button class="primary" type="submit">Sign in</button>
-        <p id="auth-message" class="message" role="alert"></p>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input id="login-password" name="password" type="password" class="form-control" required autocomplete="current-password" placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
+      </form>
+
+      <!-- Registration Form -->
+      <form id="register-form" style="display: none;">
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input id="reg-username" name="username" class="form-control" required autocomplete="username" placeholder="Choose a unique username (e.g. jsmith or student1)">
+          <small class="stat-meta" style="display:block; margin-top:0.25rem;">3–50 characters. Letters, numbers, dots, hyphens, underscores, or @ (no spaces).</small>
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <div>
+            <label for="reg-firstname">First Name</label>
+            <input id="reg-firstname" name="firstName" class="form-control" required placeholder="First name">
+          </div>
+          <div>
+            <label for="reg-surname">Surname</label>
+            <input id="reg-surname" name="surname" class="form-control" required placeholder="Surname">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input id="reg-password" name="password" type="password" class="form-control" autocomplete="new-password" placeholder="Enter password">
+        </div>
+        <div class="form-group">
+          <label for="reg-confirm">Confirm Password</label>
+          <input id="reg-confirm" name="confirmPassword" type="password" class="form-control" autocomplete="new-password" placeholder="Confirm password">
+        </div>
+        <p class="stat-meta" style="margin-bottom: 0.75rem;">
+          ℹ️ Public registration creates Student accounts. Faculty accounts are provisioned by an administrator.
+        </p>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Student Account</button>
       </form>
     </section>
-    <section id="dashboard-view" hidden>
-      <div class="course-intro"><div><p class="eyebrow">IT Professional Elective 2</p><h1>Data Mining</h1><p class="muted">Database-driven lessons, assessments, and progression.</p></div><div class="course-meta"><span>4 modules</span><span>12 chapters</span><span>75% pass mark</span></div></div>
-      <div class="layout"><aside id="curriculum" class="sidebar"></aside><section id="content" class="content"></section></div>
+
+    <!-- 2. STUDENT VIEW -->
+    <section id="student-view" style="display: none;">
+      <!-- Student Dashboard Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-title">Course Completion</span>
+          <span id="student-stat-completion" class="stat-value">0%</span>
+          <span class="stat-meta">Across 12 chapters</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Chapters Passed</span>
+          <span id="student-stat-passed" class="stat-value">0 / 12</span>
+          <span class="stat-meta">Passing mark: 15 / 20 (75%)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Current Performance Average</span>
+          <span id="student-stat-average" class="stat-value">N/A</span>
+          <span class="stat-meta">Across attempted quizzes</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Remaining Assessments</span>
+          <span id="student-stat-remaining" class="stat-value">12</span>
+          <span class="stat-meta">Sequential progression</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs for Student -->
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-student-tab="curriculum">Course Curriculum & Lessons</button>
+        <button class="tab-btn" data-student-tab="my-progress">My Grade Summary & Transcript</button>
+      </nav>
+
+      <!-- Student Tab 1: Curriculum & Lessons -->
+      <div id="student-curriculum-panel" class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="curriculum-box">
+          <div class="curriculum-header">
+            Curriculum Modules
+          </div>
+          <div id="student-module-tree">
+            <!-- Dynamically populated module and chapter tree -->
+          </div>
+        </aside>
+
+        <!-- Chapter Workspace Area -->
+        <section id="student-workspace" class="content-box">
+          <!-- Populated dynamically with Lesson View, Active Quiz, or Result Screen -->
+          <div style="text-align: center; padding: 2rem;">Loading curriculum...</div>
+        </section>
+      </div>
+
+      <!-- Student Tab 2: My Grade Summary -->
+      <div id="student-progress-panel" class="content-box" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3>My Course Progress and Gradebook</h3>
+            <p class="stat-meta">Official academic record for ITEP411-T Data Mining</p>
+          </div>
+          <div>
+            <button id="btn-export-my-pdf" class="btn btn-primary">📄 Download Official Transcript (PDF)</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Chapter</th>
+                <th>Module</th>
+                <th>Attempts</th>
+                <th>Highest Score</th>
+                <th>Status</th>
+                <th>Passed At</th>
+              </tr>
+            </thead>
+            <tbody id="my-grades-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
+
+    <!-- 3. FACULTY MANAGEMENT VIEW -->
+    <section id="faculty-view" style="display: none;">
+      <!-- Faculty Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-faculty-tab="curriculum">Curriculum & Lesson Authoring</button>
+        <button class="tab-btn" data-faculty-tab="quizzes">Quiz Management & Import</button>
+        <button class="tab-btn" data-faculty-tab="topic-gradebook">Topic-Level Gradebook</button>
+        <button class="tab-btn" data-faculty-tab="master-gradebook">Master Gradebook & Analytics</button>
+        <button class="tab-btn" data-faculty-tab="audit-logs">Audit Logs</button>
+        <button class="tab-btn" data-faculty-tab="user-mgmt">User Administration</button>
+      </nav>
+
+      <!-- Faculty Tab 1: Curriculum & Lesson Authoring -->
+      <div id="fac-curriculum-panel" class="layout">
+        <aside class="curriculum-box">
+          <div class="curriculum-header">
+            Select Chapter to Edit
+          </div>
+          <div id="fac-module-tree"></div>
+        </aside>
+        <section class="content-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <span id="fac-edit-chap-badge" class="chapter-badge badge-available">Chapter 1</span>
+              <h2 id="fac-edit-chap-title" style="margin-top: 0.25rem;">Introduction to Data Mining</h2>
+            </div>
+            <div>
+              <button id="fac-btn-save-lesson" class="btn btn-primary">💾 Save Lesson Changes</button>
+            </div>
+          </div>
+
+          <form id="fac-lesson-form">
+            <div class="form-group">
+              <label>Chapter Overview</label>
+              <textarea id="fac-edit-overview" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Learning Objectives (one per line)</label>
+              <textarea id="fac-edit-objectives" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Detailed Lesson Content (Markdown/HTML supported)</label>
+              <textarea id="fac-edit-content" class="form-control" rows="8"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Key Concepts & Summaries</label>
+              <input id="fac-edit-concepts" class="form-control">
+            </div>
+          </form>
+
+          <!-- Presentation Slide Carousel Preview / Edit -->
+          <h4 style="margin: 1.5rem 0 0.5rem 0;">Presentation Slide Deck</h4>
+          <div id="fac-slides-preview" class="slide-viewer">
+            <!-- Dynamic slide viewer preview -->
+          </div>
+
+          <!-- Lesson Materials File Upload -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1.5rem;">
+            <h4>Uploaded Presentation Materials (PDF / PPT / PPTX)</h4>
+            <div style="display: flex; gap: 0.5rem; margin: 0.75rem 0;">
+              <input type="file" id="fac-file-input" class="form-control" accept=".pdf,.ppt,.pptx">
+              <button id="fac-btn-upload-file" class="btn btn-secondary">Upload Material</button>
+            </div>
+            <div id="fac-files-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Faculty Tab 2: Quiz Management & Import -->
+      <div id="fac-quizzes-panel" class="content-box" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3>Quiz Authoring and Import</h3>
+            <p class="stat-meta">Each chapter quiz requires exactly 20 validated multiple-choice questions.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <label style="font-size: 0.85rem; font-weight: 600;">Chapter:</label>
+            <select id="fac-quiz-chap-select" class="form-control" style="width: auto;"></select>
+            <button id="fac-btn-toggle-publish" class="btn btn-secondary">Toggle Publish</button>
+            <button id="fac-btn-reset-default-quiz" class="btn btn-secondary">🔄 Reset to Curriculum Standard (20 Qs)</button>
+          </div>
+        </div>
+
+        <!-- Import Section -->
+        <div style="background: #f8fafc; border: 1px dashed var(--border-dark); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem;">
+          <h4 style="margin-bottom: 0.5rem;">Batch Import 20 Questions (JSON, CSV, or Excel .xlsx)</h4>
+          <p class="stat-meta" style="margin-bottom: 0.5rem;">Upload structured file with exactly 20 questions (Question, Option A, Option B, Option C, Option D, Correct Option).</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="file" id="fac-quiz-import-file" class="form-control" accept=".json,.csv,.xlsx">
+            <button id="fac-btn-import-quiz" class="btn btn-primary">Validate & Import Questions</button>
+          </div>
+        </div>
+
+        <div id="fac-quiz-questions-container">
+          <!-- 20 questions inspection list -->
+        </div>
+      </div>
+
+      <!-- Faculty Tab 3: Topic-Level Gradebook -->
+      <div id="fac-topic-gradebook-panel" class="content-box" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3>Topic Gradebook</h3>
+            <p class="stat-meta" id="topic-gb-subtitle">Performance breakdown by chapter</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <select id="topic-gb-chap-select" class="form-control" style="width: auto;"></select>
+            <select id="topic-gb-sort-select" class="form-control" style="width: auto;">
+              <option value="surname:asc">Sort: Surname (A-Z)</option>
+              <option value="surname:desc">Sort: Surname (Z-A)</option>
+              <option value="score:desc">Sort: Score (Highest First)</option>
+              <option value="score:asc">Sort: Score (Lowest First)</option>
+              <option value="latest_date:desc">Sort: Latest Attempt</option>
+            </select>
+            <button id="btn-export-topic-pdf" class="btn btn-secondary btn-sm">PDF</button>
+            <button id="btn-export-topic-xlsx" class="btn btn-secondary btn-sm">XLSX</button>
+            <button id="btn-export-topic-csv" class="btn btn-secondary btn-sm">CSV</button>
+            <button onclick="window.print()" class="btn btn-secondary btn-sm">🖨️ Print</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Attempts</th>
+                <th>Latest Score (/20)</th>
+                <th>Highest Score (/20)</th>
+                <th>Status</th>
+                <th>Latest Attempt Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="topic-gb-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Faculty Tab 4: Master Gradebook & Analytics -->
+      <div id="fac-master-gradebook-panel" class="content-box" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3>Course-Wide Master Gradebook</h3>
+            <p class="stat-meta">Full cross-tabulation across all 12 course chapters</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="btn-export-master-pdf" class="btn btn-secondary btn-sm">PDF</button>
+            <button id="btn-export-master-xlsx" class="btn btn-secondary btn-sm">XLSX</button>
+            <button id="btn-export-master-csv" class="btn btn-secondary btn-sm">CSV</button>
+            <button onclick="window.print()" class="btn btn-secondary btn-sm">🖨️ Print</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="master-gradebook-table">
+            <thead id="master-gb-head">
+              <!-- Dynamically populated columns (Ch1..Ch12) -->
+            </thead>
+            <tbody id="master-gb-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Faculty Tab 5: Centralized Audit Logs -->
+      <div id="fac-audit-panel" class="content-box" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3>Centralized System Audit Logs</h3>
+            <p class="stat-meta">Immutable MySQL-backed audit trail for all persistent mutations</p>
+          </div>
+          <button id="btn-refresh-audit" class="btn btn-secondary btn-sm">🔄 Refresh Logs</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Entity Type</th>
+                <th>Entity ID</th>
+                <th>IP Address</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Faculty Tab 6: User Administration -->
+      <div id="fac-users-panel" class="content-box" style="display: none;">
+        <div class="layout" style="grid-template-columns: 1fr 340px;">
+          <div>
+            <h3>Enrolled Users</h3>
+            <p class="stat-meta">Students and Instructors in ITEP411-T</p>
+            <div class="table-responsive" style="margin-top: 1rem;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Provision New Faculty Form -->
+          <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem;">
+            <h4>Provision Faculty Member</h4>
+            <p class="stat-meta" style="margin-bottom: 0.75rem;">Authorized workflow to register instructor accounts.</p>
+            <form id="form-create-faculty">
+              <div class="form-group">
+                <label>Username</label>
+                <input id="fac-new-username" class="form-control" required placeholder="e.g. prof.miller">
+              </div>
+              <div class="form-group">
+                <label>First Name</label>
+                <input id="fac-new-firstname" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Surname</label>
+                <input id="fac-new-surname" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input id="fac-new-password" type="password" class="form-control" placeholder="Enter password">
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Create Faculty Account</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
   </main>
-  <script src="/js/app.js" defer></script>
+
+  <!-- Modals Container -->
+  <div id="modal-container" style="display: none;"></div>
+
+  <!-- Vanilla JavaScript Application Logic -->
+  <script src="/js/app.js"></script>
 </body>
 </html>
